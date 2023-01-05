@@ -269,3 +269,21 @@ def sdf_add_columns(sdf, cols, new_col):
     """
     
     return sdf.withColumn(new_col, reduce(add, [F.col(col) for col in cols]))
+
+# COMMAND ----------
+
+def sdf_return_row_values(sdf, cols):
+    """
+    Function sdf_return_row_values to select the first row of input sdf, and return tuple
+    of all column values specified in cols list
+    
+    params:
+        sdf: spark df
+        cols list: list of cols to pull and return
+        
+    returns:
+        tuple with values for first row of sdf for cols specified
+    
+    """
+    
+    return tuple(sdf.select(cols).collect()[0])

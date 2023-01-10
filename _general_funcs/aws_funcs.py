@@ -7,6 +7,7 @@
 
 import boto3
 import json
+import os
 
 from shutil import copyfile
 from datetime import date
@@ -17,18 +18,19 @@ TODAY = date.today().strftime("%Y%m%d")
 
 # COMMAND ----------
 
-def boto3_s3_client(access_key, secret_key):
+def boto3_s3_client(**cred_kwargs):
     """
     Function boto3_s3_client to return boto3 s3 client
     params:
-        access_key str: aws_access_key_id value
-        secret_key str: aws_secret_access_key value
+        **cred_kwargs with given values:
+            aws_access_key_id str: aws_access_key_id value
+            aws_secret_access_key str: aws_secret_access_key value
+            aws_session_token str: OPTIONAL param if mfa needed for aws_session_token value
     """
     
     return boto3.client(
         's3',
-        aws_access_key_id=access_key,
-        aws_secret_access_key=secret_key
+        **cred_kwargs
     )
 
 # COMMAND ----------
@@ -167,3 +169,22 @@ def read_s3_to_json(client, bucket, key):
     response = client.get_object(Bucket=bucket, Key = key)
 
     return json.loads(response['Body'].read().decode('utf-8'))
+
+# COMMAND ----------
+
+def upload_s3(client, bucket, key_prefix, file_path, object_name=None):
+    """
+    Function upload_s3 to upload file at given file_path to s3 with same file name, to specified bucket/key_prefix
+    params:
+        client: boto3 s3 client
+        bucket str: name of bucket to pull from
+        key_prefix: matching key prefix on s3 path to upload to
+        file_path str: full file path of file to upload
+        object_name str: optional param if want to name uploaded object with different name from input file, otherwise will be name of input file
+        
+    """
+    
+    if object_name is None:
+        object_name = os.path.basename(file_path)
+    
+    client.upload_file(file_path, bucket, f"{key_prefix}/{object_name}")

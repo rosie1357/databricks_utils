@@ -282,8 +282,12 @@ def sdf_return_row_values(sdf, cols):
         cols list: list of cols to pull and return
         
     returns:
-        tuple with values for first row of sdf for cols specified
+        tuple with values for first row of sdf for cols specified, OR just individual value if only one col specified
     
     """
     
-    return tuple(sdf.select(cols).collect()[0])
+    values = sdf.select(cols).collect()[0]
+    if len(cols) == 1:
+        return values
+    
+    return tuple(values)

@@ -288,6 +288,6 @@ def sdf_return_row_values(sdf, cols):
     
     values = sdf.select(cols).collect()[0]
     if len(cols) == 1:
-        return values
+        return values[0]
     
     return tuple(values)

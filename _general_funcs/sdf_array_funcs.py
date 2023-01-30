@@ -9,7 +9,7 @@ from pyspark.sql import functions as F
 
 # COMMAND ----------
 
-def sdf_list_in_array(sdf, array_col, match_list, **kwargs):
+def sdf_list_in_array(sdf, array_col, match_list, match_ind='any_match', **kwargs):
     
     """
     Function sdf_list_in_array() to identify whether ANY element of an array column matches ANY element of a list
@@ -17,6 +17,7 @@ def sdf_list_in_array(sdf, array_col, match_list, **kwargs):
         sdf: spark df
         array_col str: name of array column
         match_list list: list to match against
+        match_ind str: optional param with name of match indicator, default = 'any_match'
         *kwargs:
             if match_names in kwargs, will create indicators for each value in match_list based on names in match_names
             
@@ -26,10 +27,10 @@ def sdf_list_in_array(sdf, array_col, match_list, **kwargs):
     """
     
     # create array col of 'matched_values', which is ALL values from input array contained in list (originally set to None if value not in list, but then Nones are removed with F.array_except)
-    # create indicator 'any_match', with = 1 if 'matched_values' has size >0, otherwise = 0
+    # create indicator match_ind, with = 1 if 'matched_values' has size >0, otherwise = 0
     
     sdf = sdf.withColumn('matched_values', F.array_except(F.transform(array_col, lambda x: F.when(x.isin(match_list), x).otherwise(None)), F.array(F.lit(None)))) \
-             .withColumn('any_match', F.when(F.size(F.col('matched_values'))>0, 1).otherwise(0))
+             .withColumn(match_ind, F.when(F.size(F.col('matched_values'))>0, 1).otherwise(0))
 
     if 'match_names' in kwargs:
         

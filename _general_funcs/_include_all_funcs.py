@@ -60,3 +60,7 @@ spark.conf.set('spark.sql.shuffle.partitions','auto')
 # COMMAND ----------
 
 # MAGIC %run ./udfs
+
+# COMMAND ----------
+
+# MAGIC %run ./utils/monocl_utils

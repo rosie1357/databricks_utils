@@ -16,6 +16,22 @@ from functools import reduce
 # COMMAND ----------
 
 def monocl_mesh_counts(sdf, start_year, end_year, year_col='year', mesh_col='mesh', mesh_tbl='monocl_raw.monocl_mesh', **comp_kwargs):
+    """
+    Function monocl_mesh_counts() to take in sdf and get counts by mesh term by year, joining to mesh terms descriptions
+    params:
+        sdf spark df: spark df with year and mesh cols
+        start_year int: starting year to get counts for
+        end_year int: ending year to get counts for
+        year_col str: optional param for name of year col, default = 'year'
+        mesh_col str: optional param for name of mesh col, default = 'mesh'
+        mesh_tbl str: optional param for location of table with mesh descriptions, default = 'monocl_raw.monocl_mesh'
+        **comp_kwargs dict: optional kwargs to determine base record to calculate each other's record % volume off of,
+            if not given will default to rec with highest overall count, otherwise kwargs must be key: value where key = name of col and value = value to subset on
+            
+    returns:
+        pandas df with one rec per mesh term with yearly and overall count cols, description col, and % volume col
+    
+    """
 
     # get by year, then join all together
 

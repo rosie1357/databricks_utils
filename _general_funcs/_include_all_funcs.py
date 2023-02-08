@@ -64,3 +64,7 @@ spark.conf.set('spark.sql.shuffle.partitions','auto')
 # COMMAND ----------
 
 # MAGIC %run ./utils/monocl_utils
+
+# COMMAND ----------
+
+# MAGIC %run ./dhc_data_funcs

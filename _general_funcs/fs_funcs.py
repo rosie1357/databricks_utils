@@ -152,18 +152,19 @@ def hive_tbl_cols(tbl, as_list=False):
 
 # COMMAND ----------
 
-def hive_tbl_count(tbl):
+def hive_tbl_count(tbl, condition=''):
     """
     Function hive_tbl_count to return the count of rows in given table
     params:
         tbl str: table name, eg 'db.table1'
+        condition str: optional param to specify subset on table, default = ''
         
     returns:
         int value of row count
     
     """
     
-    return spark.sql(f"select count(1) as count from {tbl}").collect()[0]['count']
+    return spark.sql(f"select count(1) as count from {tbl} {condition}").collect()[0]['count']
 
 # COMMAND ----------
 

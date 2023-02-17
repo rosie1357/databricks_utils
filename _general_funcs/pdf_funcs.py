@@ -101,6 +101,6 @@ def create_ptiles(df, col, ptiles, fillna=True, suffix='ptile', **kwargs):
     
     df[f"{col}_cumpct"] = 100*(df_sorted.cumsum() / tot)
     
-    df[outcol] = df[f"{col}_cumpct"].apply(lambda x: min(1 + math.ceil(x//div), ptiles))
+    df[outcol] = df[f"{col}_cumpct"].apply(lambda x: min(1 + math.ceil(x//div), ptiles) if x == x else np.nan)
     
     return df

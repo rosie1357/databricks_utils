@@ -120,6 +120,29 @@ def sdf_rename_cols(sdf, prefix='', suffix=''):
 
 # COMMAND ----------
 
+def sdf_rename_subset_cols(sdf, rename_cols, target, replace):
+    """
+    function sdf_rename_subset_cols() to take in spark df and rename all columns in cols list to replace 'target' with 'replace'
+    params:
+        sdf: spark df
+        rename_cols list: list of cols to rename
+        target str: string in col name to be replaced
+        replace str: string to replace target with
+        
+    returns:
+        sdf with renamed cols
+    
+    """
+    
+    # split current cols on sdf into those we will not rename and those we will
+    
+    KEEP_COLS = list(filter(lambda x: x not in rename_cols, sdf.columns))
+    RENAME_COLS = [F.col(x).alias(x.replace(target, replace)) for x in rename_cols]
+    
+    return sdf.select(*KEEP_COLS + RENAME_COLS)
+
+# COMMAND ----------
+
 def sdf_col_contains(sdf, incol, newcol, string_list):
     """
     Function sdf_col_contains to take in list of strings and create 0/1 indicator if incol contains ANY string in list

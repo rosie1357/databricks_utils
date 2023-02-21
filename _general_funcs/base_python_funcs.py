@@ -1,7 +1,11 @@
 # Databricks notebook source
 # MAGIC %md
 # MAGIC 
-# MAGIC **base_python_funcs.py: This notebook contains any functions related to base python (eg dealing with lists, strings)**
+# MAGIC **base_python_funcs.py: This notebook contains any functions related to base python (eg dealing with lists, stringsm date)**
+
+# COMMAND ----------
+
+from datetime import datetime, timedelta
 
 # COMMAND ----------
 
@@ -35,3 +39,25 @@ def unique_items_part(items, num, sep='/'):
   
     """
     return sorted(set(map(lambda x: x.split(sep)[num], items)))
+
+# COMMAND ----------
+
+def add_time(start_date, string_format="%Y-%m-%d", add_days=0, add_weeks=0):
+    """
+    Function add_time to take in start date as string, add a given time interval,
+      and return string date with given time added
+      (note only days and weeks options are built in, can add more if needed)
+      
+    params:
+        start_date str: starting date as string
+        add_value int: integer value to add
+        string_format str: format of date string, default = "%Y-%m-%d" (return will be same type)
+        add_interval str: interval to add, default = 'days'
+        
+    returns:
+        string date with string_format
+    
+    """
+    
+    new_date = datetime.strptime(start_date, string_format) + timedelta(days=add_days, weeks=add_weeks)
+    return new_date.strftime(string_format)

@@ -162,11 +162,21 @@ def sdf_create_window(partition, order=None, rows_between=None):
     params:
         partition list: list of col(s) to partion by
         order list: optional param to pass order if needed, default = None
-        rows_between tuple: optional param to specify range of rows preceding/following frame, eg (-10, 10)
+        rows_between tuple/str: optional param to specify range of rows preceding/following frame, eg (-10, 10),
+              OR = 'unboundedPreceding' or 'unboundedFollowing' or 'unboundedBoth'
         
     returns: Window specification
     
     """
+    
+    if rows_between == 'unboundedPreceding':
+        rows_between = (Window.unboundedPreceding,0)
+        
+    elif rows_between == 'unboundedFollowing':
+        rows_between = (0,Window.unboundedFollowing)
+        
+    elif rows_between == 'unboundedBoth':
+        rows_between = (Window.unboundedPreceding, Window.unboundedFollowing)
     
     window_spec = Window.partitionBy(*partition)
     

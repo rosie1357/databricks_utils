@@ -24,6 +24,20 @@ def unique_list_elements(list1, list2):
 
 # COMMAND ----------
 
+def list_intersection(list1, list2):
+    """
+    Function list_intersection to identify elements in both lists
+    params:
+        list1 list: base list
+        list2 list: compare list
+        
+    returns: list
+    
+    """
+    return list(set(list1) & set(list2))
+
+# COMMAND ----------
+
 def unique_items_part(items, num, sep='/'):
     """
       Function unique_items_part to split input list of items on given separator, take specified split number, 

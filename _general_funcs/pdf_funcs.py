@@ -105,6 +105,6 @@ def create_ptiles(df, col, ptiles, fillna=True, suffix='ptile', return_zero_null
     df[outcol] = df[f"{col}_cumpct"].apply(lambda x: min(1 + math.ceil(x//div), ptiles) if x == x else np.nan)
     
     if return_zero_null:
-        df[outcol] = df[[outcol, col]].apply(lambda x: np.nan if x[1] == 0 else x[0])
+        df[outcol] = df[[outcol, col]].apply(lambda x: x[0] if (x[1] > 0) else np.nan, axis=1)
     
     return df

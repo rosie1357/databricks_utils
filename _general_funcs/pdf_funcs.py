@@ -62,7 +62,7 @@ def concatenate_cols(df, cols, sep=' '):
 
 # COMMAND ----------
 
-def create_ptiles(df, col, ptiles, fillna=True, suffix='ptile', **kwargs):
+def create_ptiles(df, col, ptiles, fillna=True, suffix='ptile', return_zero_null=True, **kwargs):
     """
     Function create_ptiles to read in given df and create ptiles
     params:
@@ -71,6 +71,7 @@ def create_ptiles(df, col, ptiles, fillna=True, suffix='ptile', **kwargs):
         col str: name of column to create ptiles from
         fillna bool: optional param to specify whether to fill col with 0s if na, default = True
         suffix str: optional param to specify suffix to add to col name for new ptile col, default = 'ptile'
+        return_zero_null bool: optional param to specify whether to set values of 0s to null instead of allowing to be in first ptile, default=True
         **kwargs:
             sort_cols list: optional param to list additional cols to sort by to deal with possible ties
             outcol str: optional param to specify name of output column, otherwise = {col}_{suffix}
@@ -102,5 +103,8 @@ def create_ptiles(df, col, ptiles, fillna=True, suffix='ptile', **kwargs):
     df[f"{col}_cumpct"] = 100*(df_sorted.cumsum() / tot)
     
     df[outcol] = df[f"{col}_cumpct"].apply(lambda x: min(1 + math.ceil(x//div), ptiles) if x == x else np.nan)
+    
+    if return_zero_null:
+        df[outcol] = df[[outcol, col]].apply(lambda x: np.nan if x[1] == 0 else x[0])
     
     return df

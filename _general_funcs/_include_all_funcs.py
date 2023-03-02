@@ -68,3 +68,7 @@ spark.conf.set('spark.sql.shuffle.partitions','auto')
 # COMMAND ----------
 
 # MAGIC %run ./dhc_data_funcs
+
+# COMMAND ----------
+
+# MAGIC %run ./decorators

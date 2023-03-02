@@ -13,7 +13,7 @@ def timeit(func):
         start = time.perf_counter()
         func(*args,  **kwargs)
         time_seconds = time.perf_counter()-start
-        if kwargs['time']=='seconds':
+        if kwargs.get('time','')=='seconds':
             print('\t' + f"Total time: {int(time_seconds)} seconds")
         else:
             print('\t' + f"Total time: {int(time_seconds//60)} minutes")

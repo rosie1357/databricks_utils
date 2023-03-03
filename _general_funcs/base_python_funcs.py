@@ -75,3 +75,17 @@ def add_time(start_date, string_format="%Y-%m-%d", add_days=0, add_weeks=0):
     
     new_date = datetime.strptime(start_date, string_format) + timedelta(days=add_days, weeks=add_weeks)
     return new_date.strftime(string_format)
+
+# COMMAND ----------
+
+def collapse_multi_index(df, SEP='_'):
+    """
+    function collapse_multi_index() to take in df with multi-level index and collapse with given separator
+        will remove sep from end of new col name if < values in given col than rest of index
+        
+    returns:
+        list of new collapsed col names    
+    """
+    
+    new_cols = [SEP.join(list(map(str, x))) for x in df.columns]
+    return list(map(lambda x: x[:-len(SEP)] if x.endswith(SEP) else x, new_cols))

@@ -1,4 +1,5 @@
 import pyspark
+from org.apache import spark
 from pyspark.sql.functions import lit
 from delta.tables import DeltaTable
 

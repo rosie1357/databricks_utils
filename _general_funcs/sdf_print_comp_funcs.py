@@ -1,14 +1,5 @@
-# Databricks notebook source
-# MAGIC %md
-# MAGIC 
-# MAGIC **sdf_print_comp_funcs.py: This notebook contains functions that return prints and/or comparisons from sdfs**
-
-# COMMAND ----------
-
 import datacompy
 from pyspark.sql import functions as F
-
-# COMMAND ----------
 
 def sdf_check_distinct(sdf, cols):
     """
@@ -34,8 +25,6 @@ def sdf_check_distinct(sdf, cols):
         result = result.replace('Distinct', 'NOT Distinct')
     
     return f"Total records: {tot_recs}, Unique records: {unique_recs}, {result}"  
-
-# COMMAND ----------
 
 def sdf_frequency(sdf, cols, order='count', maxobs=25, with_pct=False, weight=None, return_df=False, to_print=True):
     """
@@ -84,8 +73,6 @@ def sdf_frequency(sdf, cols, order='count', maxobs=25, with_pct=False, weight=No
     
     if return_df:
         return freq
-
-# COMMAND ----------
 
 def sdfs_compare(base_sdf, comp_sdf, table_name, join_cols, **kwargs):
     """

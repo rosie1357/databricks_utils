@@ -1,10 +1,3 @@
-# Databricks notebook source
-# MAGIC %md
-# MAGIC 
-# MAGIC **sdf_funcs.py: This notebook contains functions that act on/with spark dataframes**
-
-# COMMAND ----------
-
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 
@@ -12,11 +5,6 @@ from random import random
 from functools import reduce
 from operator import add
 
-# COMMAND ----------
-
-# MAGIC %run ./fs_funcs
-
-# COMMAND ----------
 
 def union_to_sdf(tables_list, cols=['*'], col_check=True, union_type='all'):
     """
@@ -60,8 +48,6 @@ def union_to_sdf(tables_list, cols=['*'], col_check=True, union_type='all'):
     
     return spark.sql(query)
 
-# COMMAND ----------
-
 def sdf_add_cond_col(sdf, newcol, condition, if_true=1, if_false=0):
     """
     Function to create a new column based on a conditional on a spark df
@@ -82,8 +68,6 @@ def sdf_add_cond_col(sdf, newcol, condition, if_true=1, if_false=0):
                           .otherwise(if_false)
                          )
 
-# COMMAND ----------
-
 def add_null_indicator(sdf, col):
     """
     Function add_null_indicator to return sdf with 0/1 indicator if given col is null
@@ -101,8 +85,6 @@ def add_null_indicator(sdf, col):
                            condition = F.col(col).isNull()
                            )
 
-# COMMAND ----------
-
 def sdf_rename_cols(sdf, prefix='', suffix=''):
     """
     Function sdf_rename_cols to rename ALL cols on input spark df with prefix and/or suffix
@@ -117,8 +99,6 @@ def sdf_rename_cols(sdf, prefix='', suffix=''):
     """
     
     return sdf.select(*[F.col(c).alias(f"{prefix}{c}{suffix}") for c in sdf.columns])
-
-# COMMAND ----------
 
 def sdf_rename_subset_cols(sdf, rename_cols, target, replace):
     """
@@ -141,8 +121,6 @@ def sdf_rename_subset_cols(sdf, rename_cols, target, replace):
     
     return sdf.select(*KEEP_COLS + RENAME_COLS)
 
-# COMMAND ----------
-
 def sdf_col_contains(sdf, incol, newcol, string_list):
     """
     Function sdf_col_contains to take in list of strings and create 0/1 indicator if incol contains ANY string in list
@@ -153,8 +131,6 @@ def sdf_col_contains(sdf, incol, newcol, string_list):
                            ,newcol = newcol
                            ,condition = F.col(incol).rlike("|".join([f"({i})" for i in string_list]))
                            )
-
-# COMMAND ----------
 
 def sdf_create_window(partition, order=None, rows_between=None):
     """
@@ -187,8 +163,6 @@ def sdf_create_window(partition, order=None, rows_between=None):
         window_spec = window_spec.rowsBetween(*rows_between)
         
     return window_spec
-
-# COMMAND ----------
 
 def remove_non_alphanum(sdf, incols, outcols, replace_with='', keep='both', keep_space=False):
     """
@@ -226,8 +200,6 @@ def remove_non_alphanum(sdf, incols, outcols, replace_with='', keep='both', keep
     
     return sdf
 
-# COMMAND ----------
-
 def sdf_rand_sample(sdf, fraction, seed=random(), with_replace=False, samp_id=None, partition_by=None):
     """
     Function to take a random sample of input df and return sample
@@ -256,8 +228,6 @@ def sdf_rand_sample(sdf, fraction, seed=random(), with_replace=False, samp_id=No
     
     return samp_sdf
 
-# COMMAND ----------
-
 def create_quarter_col(sdf, date_col, quarter_col='quarter'):
     """
     Function create_quarter_col to transform date_col into quarter (year and quarter) column
@@ -272,8 +242,6 @@ def create_quarter_col(sdf, date_col, quarter_col='quarter'):
     
     return sdf.withColumn(quarter_col, F.concat(F.year(date_col).cast('string'), F.lit('Q'), F.quarter(date_col).cast('string')))    
 
-# COMMAND ----------
-
 def sdf_col_to_list(sdf, col):
     """
     Function sdf_col_to_list to return a column on sdf as python list
@@ -286,8 +254,6 @@ def sdf_col_to_list(sdf, col):
     """
     
     return list(sdf.select(col).toPandas()[col])
-
-# COMMAND ----------
 
 def sdf_add_columns(sdf, cols, new_col):
     """
@@ -302,8 +268,6 @@ def sdf_add_columns(sdf, cols, new_col):
     """
     
     return sdf.withColumn(new_col, reduce(add, [F.col(col) for col in cols]))
-
-# COMMAND ----------
 
 def sdf_return_row_values(sdf, cols):
     """

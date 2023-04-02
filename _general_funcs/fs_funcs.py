@@ -1,17 +1,8 @@
-# Databricks notebook source
-# MAGIC %md
-# MAGIC 
-# MAGIC **fs_funcs.py: This notebook contains short functions that interact with the databricks file system (reading from, writing to, creating dfs, etc)**
-
-# COMMAND ----------
-
 import pyspark
 from pyspark.sql.functions import lit
 from delta.tables import DeltaTable
 
 from time import sleep
-
-# COMMAND ----------
 
 def hive_to_df(tbl, cols=['*'], df_type='spark', rec_limit=None, new_cols={}, subset=''):
     """
@@ -53,8 +44,6 @@ def hive_to_df(tbl, cols=['*'], df_type='spark', rec_limit=None, new_cols={}, su
             
         return query
 
-# COMMAND ----------
-
 def pyspark_to_hive(df_ps, out_tbl, out_format='delta', out_mode='overwrite', overwrite_schema='false'):
     """
     Function pyspark_to_hive to save pyspark df to hive and file explorer
@@ -73,7 +62,6 @@ def pyspark_to_hive(df_ps, out_tbl, out_format='delta', out_mode='overwrite', ov
     
     df_ps.write.format(out_format).mode(out_mode).option("overwriteSchema", overwrite_schema).saveAsTable(out_tbl)
 
-# COMMAND ----------
 
 def copy_hive_table(tbl_orig, tbl_copy, shallow=False, can_replace=False):
     """
@@ -92,7 +80,6 @@ def copy_hive_table(tbl_orig, tbl_copy, shallow=False, can_replace=False):
 
     DeltaTable.forName(spark, tbl_orig).clone(tbl_copy, isShallow=shallow, replace=can_replace)
 
-# COMMAND ----------
 
 def drop_hive_table(tbl_list, must_exist=True):
     """
@@ -111,7 +98,6 @@ def drop_hive_table(tbl_list, must_exist=True):
     for tbl in tbl_list:
         spark.sql(f"drop table {exist_logic} {tbl}")
 
-# COMMAND ----------
 
 def list_db_tables(db, name_like='*'):
     """
@@ -130,7 +116,6 @@ def list_db_tables(db, name_like='*'):
                           """) \
                .toPandas()['tableName'])
 
-# COMMAND ----------
 
 def hive_tbl_cols(tbl, as_list=False):
     """
@@ -150,7 +135,6 @@ def hive_tbl_cols(tbl, as_list=False):
     
     return cols
 
-# COMMAND ----------
 
 def hive_tbl_count(tbl, condition=''):
     """
@@ -166,7 +150,6 @@ def hive_tbl_count(tbl, condition=''):
     
     return spark.sql(f"select count(1) as count from {tbl} {condition}").collect()[0]['count']
 
-# COMMAND ----------
 
 def hive_tbl_count_distinct(tbl, col):
     """
@@ -182,7 +165,6 @@ def hive_tbl_count_distinct(tbl, col):
     
     return spark.sql(f"select count(distinct {col}) as count from {tbl}").collect()[0]['count']
 
-# COMMAND ----------
 
 def hive_frequency(tbl, cols, maxobs=50):
     """
@@ -217,8 +199,6 @@ def hive_frequency(tbl, cols, maxobs=50):
     
     """).show(maxobs, truncate=False)
 
-# COMMAND ----------
-
 def hive_sample(tbl, maxobs=50):
     """
     Function hive_sample to print sample of records from hive table
@@ -230,8 +210,6 @@ def hive_sample(tbl, maxobs=50):
     """
     
     spark.sql(f"select * from {tbl} limit {maxobs}").display()
-
-# COMMAND ----------
 
 def list_lookup(intable, col, subset_col, subset_value, string=True):
     """
@@ -260,8 +238,6 @@ def list_lookup(intable, col, subset_col, subset_value, string=True):
     
     return joined
 
-# COMMAND ----------
-
 def rm_checkpoints(checkdir):
     """
     Function rm_checkpoints to be run when want to clear ALL checkpointed files in the given checkpoint directory
@@ -287,8 +263,6 @@ def rm_checkpoints(checkdir):
     dbutils.fs.mkdirs(checkdir)
 
     print(f"All files removed from checkpoint directory = {checkdir}!")
-
-# COMMAND ----------
 
 def clear_database(database, sleep_time=10):
     """

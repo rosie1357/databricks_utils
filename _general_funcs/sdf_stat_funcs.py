@@ -1,14 +1,5 @@
-# Databricks notebook source
-# MAGIC %md
-# MAGIC 
-# MAGIC **sdf_stat_funcs.py: This notebook contains functions that do stats/calculations on sdfs**
-
-# COMMAND ----------
-
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
-
-# COMMAND ----------
 
 def sdf_normalize_measure(sdf, measure, drop_interim_cols=True, **kwargs):
     """

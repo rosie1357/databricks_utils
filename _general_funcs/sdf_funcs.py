@@ -1,10 +1,12 @@
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
+from pyspark.sql import SparkSession
 
 from random import random
 from functools import reduce
 from operator import add
 
+spark = SparkSession.builder.getOrCreate()
 
 def union_to_sdf(tables_list, cols=['*'], col_check=True, union_type='all'):
     """

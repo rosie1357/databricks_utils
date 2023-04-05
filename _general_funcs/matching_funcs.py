@@ -1,18 +1,7 @@
-# Databricks notebook source
-# MAGIC %md
-# MAGIC 
-# MAGIC **matching_funcs.py: This notebook contains functions that are used in performing matching**
-
-# COMMAND ----------
-
 from pyspark.sql import functions as F
 from pyspark.sql.types import DoubleType
 
-# COMMAND ----------
-
-# MAGIC %run ./sdf_funcs
-
-# COMMAND ----------
+from _general_funcs.sdf_funcs import sdf_add_cond_col
 
 def lev_match_array(sdf, base_name, array_match_names, remove_spaces=True, match_thresholds=[0.3], keep_one=True, addtl_cols_keep=[]):
     """
@@ -90,8 +79,6 @@ def lev_match_array(sdf, base_name, array_match_names, remove_spaces=True, match
                                condition = F.col('best_lev')<=threshold) 
 
     return sdf.select(*COLS_KEEP)
-
-# COMMAND ----------
 
 def match_string_contains(incol, matchcol):
     """

@@ -1,7 +1,4 @@
-# Databricks notebook source
 import time
-
-# COMMAND ----------
 
 def timeit(func):
     """

@@ -4,9 +4,7 @@ from pyspark.sql.functions import lit
 from delta.tables import DeltaTable
 from time import sleep
 
-spark = SparkSession \
-    .builder \
-    .getOrCreate()
+spark = SparkSession.builder.getOrCreate()
 
 def hive_to_df(tbl, cols=['*'], df_type='spark', rec_limit=None, new_cols={}, subset=''):
     """

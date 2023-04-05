@@ -1,19 +1,8 @@
-# Databricks notebook source
-# MAGIC %md
-# MAGIC 
-# MAGIC **monocl_utils.py: This notebook contains any monocl-related utilities**
-
-# COMMAND ----------
-
 import pandas as pd
-
 from functools import reduce
 
-# COMMAND ----------
-
-# MAGIC %run ../sdf_print_comp_funcs
-
-# COMMAND ----------
+from _general_funcs.sdf_print_comp_funcs import sdf_frequency
+from _general_funcs.fs_funcs import hive_to_df
 
 def monocl_mesh_counts(sdf, start_year, end_year, year_col='year', mesh_col='mesh', mesh_tbl='monocl_raw.monocl_mesh', **comp_kwargs):
     """

@@ -1,10 +1,3 @@
-# Databricks notebook source
-# MAGIC %md
-# MAGIC 
-# MAGIC **Functions to use when running notebook pipelines**
-
-# COMMAND ----------
-
 def exit_notebook(notebook_return, fail=True):
     """
     Function exit_notebook to use to pass fail messages/params between notebooks
@@ -33,8 +26,6 @@ def exit_notebook(notebook_return, fail=True):
         notebook_return['fail'] = False
     
     return dbutils.notebook.exit(notebook_return)
-
-# COMMAND ----------
 
 def notebook_returns_passthrough(returns_dict, pass_message, fail_message_key='message', bool_fail_key='fail'):
     """

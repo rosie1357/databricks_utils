@@ -1,10 +1,3 @@
-# Databricks notebook source
-# MAGIC %md
-# MAGIC 
-# MAGIC **dhc_data_funcs.py: This notebook contains any functions to pull DHC data**
-
-# COMMAND ----------
-
 def get_primary_affiliation(addtl_cols=[]):
     """
     Function get_primary_affiliation to return a spark df with one rec per NPI with primary affiliation
@@ -66,8 +59,6 @@ def get_primary_affiliation(addtl_cols=[]):
            
    """)
 
-# COMMAND ----------
-
 def create_ind(col, ind, codes, CodeType=None, string_values=True, getmax=False):
     """
     Function create_ind to return statement to create indicator based on code sets
@@ -101,27 +92,35 @@ def create_ind(col, ind, codes, CodeType=None, string_values=True, getmax=False)
     
     return f"{stmt} as {ind}_code"
 
-# COMMAND ----------
-
-def pull_ndc_lists(name, compound_list):
+def create_ind(col, ind, codes, CodeType=None, string_values=True, getmax=False):
     """
-    pull_ndc_lists function to return part of case statement (starting only with when assuming they will be combined)
-    to combine all variations of words in compound_list to assign to one name, looking at both prop and non-prop names
-    
-        example output: when upper(NONPROPRIETARYNAME) like ('%OZEMPIC%') or 
-                             upper(PROPRIETARYNAME) like ('%OZEMPIC%') or 
-                             upper(NONPROPRIETARYNAME) like ('%SEMAGLUTIDE%') or 
-                             upper(PROPRIETARYNAME) like ('%SEMAGLUTIDE%') then 'semaglutide'
-                             
-     params:
-         name str: value for final output col
-         compound_list list: list of all compound names (will be sandwiched between %) to match on
-     
-     returns:
-         string with statement like above example
+    Function create_ind to return statement to create indicator based on code sets
+    params:
+        col str: name of column to match against
+        ind str: name of indicator to create if match, will add _code to the end
+        codes list: list of codes to match on
+        CodeType str: optional param to specify value for CodeType to condition on IF USING MXCODES TABLE, eg 'DIAGNOSIS'
+        string_values bool: optional param to specify whether codes are string and to put quotes around each, default = True
+        getmax bool: optional param to specify whether the ind will be used in aggregations and should put max() around statement, default = False
+        
+    returns:
+        case statement to create ind
     
     """
     
-    stmts = ' or '.join(f"upper(NONPROPRIETARYNAME) like ('%{x.upper()}%') or upper(PROPRIETARYNAME) like ('%{x.upper()}%')" for x in compound_list)
+    if string_values:
+        
+        codes_str = ', '.join(f"'{c}'" for c in codes)
+    else:
+        codes_str = ', '.join(f'{c}' for c in codes)
+        
+    types_str = ''
+    if CodeType:
+        types_str = f"and upper(CodeType) = '{CodeType}'"
+        
+    stmt = f"case when {col} in ({codes_str}) {types_str} then 1 else 0 end"
     
-    return f"when {stmts} then '{name}'"
+    if getmax:
+        stmt = f"max({stmt})"
+    
+    return f"{stmt} as {ind}_code"

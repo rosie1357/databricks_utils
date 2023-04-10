@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 pandas = "*"
 pyspark = "*"
+
 [dev-packages]
 
 [requires]

@@ -1,7 +1,6 @@
 import pyspark
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import lit
-from delta.tables import DeltaTable
 from time import sleep
 
 spark = SparkSession.builder.getOrCreate()
@@ -63,24 +62,6 @@ def pyspark_to_hive(df_ps, out_tbl, out_format='delta', out_mode='overwrite', ov
     """
     
     df_ps.write.format(out_format).mode(out_mode).option("overwriteSchema", overwrite_schema).saveAsTable(out_tbl)
-
-
-def copy_hive_table(tbl_orig, tbl_copy, shallow=False, can_replace=False):
-    """
-    Function to copy hive table to new location
-    params:
-        tbl_orig str: name of original table to copy
-        tbl_copy str: name of destination location to copy to
-        shallow bool: optional boolean to specify shallow copy, default = False (creates independent full copy)
-        can_replace bool: optional boolean to specify whether should allow replacement, or error if already exists, default = False (error if exists)
-        
-        
-    returns:
-        none
-    
-    """
-
-    DeltaTable.forName(spark, tbl_orig).clone(tbl_copy, isShallow=shallow, replace=can_replace)
 
 
 def drop_hive_table(tbl_list, must_exist=True):

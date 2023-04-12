@@ -22,5 +22,5 @@ def pairwise_combos(array_col):
     return list(combinations(array_col,2))
 
 pairwise_combos_udf = F.udf(lambda x: pairwise_combos(x),
-                           returnType=ArrayType(ArrayType(StringType()))
+                            returnType=ArrayType(ArrayType(StringType()))
                            )

@@ -15,8 +15,6 @@ src/_general_funcs/sdf_funcs.py
 src/_general_funcs/sdf_print_comp_funcs.py
 src/_general_funcs/sdf_stat_funcs.py
 src/_general_funcs/setup.py
-src/_general_funcs/udfs.py
-src/_general_funcs/vscode_testing.py
 src/general_funcs.egg-info/PKG-INFO
 src/general_funcs.egg-info/SOURCES.txt
 src/general_funcs.egg-info/dependency_links.txt

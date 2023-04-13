@@ -32,6 +32,29 @@ def sdf_list_in_array(sdf, array_col, match_list, match_ind='any_match', **kwarg
         
     return sdf
 
+def sdf_array_contains(sdf, array_col, match_string, match_ind='any_match'):
+    
+    """
+    Function sdf_array_contains() to identify whether ANY element of an array column contains (starts/contains/ends with) given string
+    params:
+        sdf: spark df
+        array_col str: name of array column
+        match_string str: string to match
+        match_ind str: optional param with name of match indicator, default = 'any_match'
+            
+    returns:
+        sdf with column 'any_match', which = 1 if any match found, 0 otherwise
+    
+    """
+    
+    # create array col of 'matched_values', which is ALL values from input array with match (originally set to None if value not in list, but then Nones are removed with F.array_except)
+    # create indicator match_ind, with = 1 if 'matched_values' has size >0, otherwise = 0
+    
+    sdf = sdf.withColumn('matched_values', F.array_except(F.transform(array_col, lambda x: F.when(x.startswith(match_string), x).otherwise(None)), F.array(F.lit(None)))) \
+             .withColumn(match_ind, F.when(F.size(F.col('matched_values'))>0, 1).otherwise(0))
+
+    return sdf
+
 def sdf_array_overlap_rm(sdf, base_col, comp_cols):
     """
     Function sdf_array_overlap_rm to remove any overlap from comp_cols that exists between base_col and each comp_col
@@ -90,4 +113,29 @@ def sdf_concat_arrays_unq(sdf, cols, new_col, as_size=False):
     if as_size:
         sdf = sdf.withColumn(new_col, F.size(new_col))
         
+    return sdf
+
+def pairwise_combos(sdf, arraycol, outcol):
+    """
+    Function pariwise_combos to take array column and create new col with array of arrays of all pairwise combos
+    params:
+        sdf: spark df
+        arraycol str: name of array column
+        outcol str: name of new col to create with pairs
+
+    """
+
+    sdf = sdf.withColumn(outcol,
+        F.filter(
+            F.transform(
+                F.flatten(F.transform(
+                    arraycol,
+                    lambda x: F.arrays_zip(F.array_repeat(x, F.size(arraycol)), arraycol)
+                )),
+                lambda x: F.array(x["0"], x[arraycol])
+            ),
+            lambda x: x[0] < x[1]
+        )
+    )
+
     return sdf

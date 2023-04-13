@@ -114,3 +114,28 @@ def sdf_concat_arrays_unq(sdf, cols, new_col, as_size=False):
         sdf = sdf.withColumn(new_col, F.size(new_col))
         
     return sdf
+
+def pairwise_combos(sdf, arraycol, outcol):
+    """
+    Function pariwise_combos to take array column and create new col with array of arrays of all pairwise combos
+    params:
+        sdf: spark df
+        arraycol str: name of array column
+        outcol str: name of new col to create with pairs
+
+    """
+
+    sdf = sdf.withColumn(outcol,
+        F.filter(
+            F.transform(
+                F.flatten(F.transform(
+                    arraycol,
+                    lambda x: F.arrays_zip(F.array_repeat(x, F.size(arraycol)), arraycol)
+                )),
+                lambda x: F.array(x["0"], x[arraycol])
+            ),
+            lambda x: x[0] < x[1]
+        )
+    )
+
+    return sdf

@@ -262,8 +262,8 @@ def rm_checkpoints(checkdir):
     print(f"User note! ALL files within {checkdir} will be removed - cancel within {x} seconds if unintended!" + '\n')
     sleep(x)
     
-    dbutils().fs.rm(checkdir, True)
-    dbutils().fs.mkdirs(checkdir)
+    get_dbutils().fs.rm(checkdir, True)
+    get_dbutils().fs.mkdirs(checkdir)
 
     print(f"All files removed from checkpoint directory = {checkdir}!")
 

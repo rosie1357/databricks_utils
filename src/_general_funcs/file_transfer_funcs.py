@@ -1,6 +1,8 @@
 from shutil import copyfile
 from datetime import date
 
+from _general_funcs.utils import get_dbutils
+
 TODAY = date.today().strftime("%Y%m%d")
 
 def to_csv(sdf, outname, outdir="/tmp", array_cols=[]):
@@ -26,8 +28,8 @@ def to_csv(sdf, outname, outdir="/tmp", array_cols=[]):
         
     # must delete if exists
     try:
-        dbutils.fs.ls(outpath)
-        dbutils.fs.rm(outpath, True)
+        get_dbutils().fs.ls(outpath)
+        get_dbutils().fs.rm(outpath, True)
     except:
         pass
     

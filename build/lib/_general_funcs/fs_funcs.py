@@ -3,7 +3,9 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import lit
 from time import sleep
 
-spark = SparkSession.builder.getOrCreate()
+from _general_funcs.utils import get_dbutils
+
+spark = SparkSession.getActiveSession()
 
 def hive_to_df(tbl, cols=['*'], df_type='spark', rec_limit=None, new_cols={}, subset=''):
     """
@@ -21,6 +23,8 @@ def hive_to_df(tbl, cols=['*'], df_type='spark', rec_limit=None, new_cols={}, su
         pandas df
   
     """
+
+    spark = SparkSession.getActiveSession()
     
     assert df_type in ['pandas','spark'], f"df_type must = pandas or spark, passed value = {df_type} - FIX!"
     
@@ -75,6 +79,8 @@ def drop_hive_table(tbl_list, must_exist=True):
         none
     
     """
+
+    spark = SparkSession.getActiveSession()
     
     exist_logic = '' if must_exist else 'if exists'
     
@@ -93,6 +99,8 @@ def list_db_tables(db, name_like='*'):
         list
     
     """
+
+    spark = SparkSession.getActiveSession()
     
     return list(spark.sql(f"""
                           show tables in {db} like '{name_like}'
@@ -111,7 +119,9 @@ def hive_tbl_cols(tbl, as_list=False):
         comma-separated list of col names or regular list
     
     """
-    
+
+    spark = SparkSession.getActiveSession()
+
     cols = spark.table(tbl).limit(0).columns
     if as_list==False:
         cols = ", ".join(cols)
@@ -130,6 +140,8 @@ def hive_tbl_count(tbl, condition=''):
         int value of row count
     
     """
+
+    spark = SparkSession.getActiveSession()
     
     return spark.sql(f"select count(1) as count from {tbl} {condition}").collect()[0]['count']
 
@@ -145,6 +157,8 @@ def hive_tbl_count_distinct(tbl, col):
         int value of distinct value counts
     
     """
+
+    spark = SparkSession.getActiveSession()
     
     return spark.sql(f"select count(distinct {col}) as count from {tbl}").collect()[0]['count']
 
@@ -161,6 +175,8 @@ def hive_frequency(tbl, cols, maxobs=50):
         none, prints frequency
     
     """
+
+    spark = SparkSession.getActiveSession()
     
     cols_query = ', '.join(cols)
     
@@ -191,6 +207,8 @@ def hive_sample(tbl, maxobs=50):
         
     returns: none (prints records)
     """
+
+    spark = SparkSession.getActiveSession()
     
     spark.sql(f"select * from {tbl} limit {maxobs}").display()
 
@@ -206,6 +224,8 @@ def list_lookup(intable, col, subset_col, subset_value, string=True):
         subset_value int/str: value to subset on with subset_col
         string bool: optional param to specify lookup values are string and should be separated by comma with added quotes, otherwise false is comma-only (assumes numeric)
     """
+
+    spark = SparkSession.getActiveSession()
 
     values = spark.sql(f"""select {col}
                            from {intable}
@@ -242,8 +262,8 @@ def rm_checkpoints(checkdir):
     print(f"User note! ALL files within {checkdir} will be removed - cancel within {x} seconds if unintended!" + '\n')
     sleep(x)
     
-    dbutils.fs.rm(checkdir, True)
-    dbutils.fs.mkdirs(checkdir)
+    dbutils().fs.rm(checkdir, True)
+    dbutils().fs.mkdirs(checkdir)
 
     print(f"All files removed from checkpoint directory = {checkdir}!")
 
@@ -264,6 +284,7 @@ def clear_database(database, sleep_time=10):
     
     """
     
+    spark = SparkSession.getActiveSession()
     
     print(f"User note! ALL tables within {database} will be removed - cancel within {sleep_time} seconds if unintended!" + '\n')
     sleep(sleep_time)

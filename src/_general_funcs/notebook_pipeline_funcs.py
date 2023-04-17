@@ -1,3 +1,5 @@
+from _general_funcs.utils import get_dbutils
+
 def exit_notebook(notebook_return, fail=True):
     """
     Function exit_notebook to use to pass fail messages/params between notebooks
@@ -25,7 +27,7 @@ def exit_notebook(notebook_return, fail=True):
             
         notebook_return['fail'] = False
     
-    return dbutils.notebook.exit(notebook_return)
+    return dbutils().notebook.exit(notebook_return)
 
 def notebook_returns_passthrough(returns_dict, pass_message, fail_message_key='message', bool_fail_key='fail'):
     """
@@ -44,7 +46,7 @@ def notebook_returns_passthrough(returns_dict, pass_message, fail_message_key='m
     """
 
     if returns_dict[bool_fail_key]:
-        dbutils.notebook.exit("NOTEBOOK FAILED:" + '\n\t' + f"{returns_dict[fail_message_key]}")
+        dbutils().notebook.exit("NOTEBOOK FAILED:" + '\n\t' + f"{returns_dict[fail_message_key]}")
 
     else:
         print(pass_message)

@@ -6,8 +6,6 @@ from random import random
 from functools import reduce
 from operator import add
 
-spark = SparkSession.builder.getOrCreate()
-
 def union_to_sdf(tables_list, cols=['*'], col_check=True, union_type='all'):
     """
     Function to union all hive tables specified in tables_list, AFTER checking columns are the same
@@ -26,6 +24,8 @@ def union_to_sdf(tables_list, cols=['*'], col_check=True, union_type='all'):
         spark df 
   
     """
+
+    spark = SparkSession.getActiveSession()
     
     assert union_type in ['all','distinct'], f"union_type must = all or distinct, passed value = {union_type} - FIX!"
     

@@ -6,6 +6,8 @@ from shutil import copyfile
 from datetime import date
 from tempfile import NamedTemporaryFile
 
+from _general_funcs.utils import get_dbutils
+
 TODAY = date.today().strftime("%Y%m%d")
 
 def boto3_s3_client(**cred_kwargs):
@@ -71,7 +73,7 @@ def download_save_s3(client, bucket, blob_prefix, key_prefix, **kwargs):
           
     print('\t' + f"Saving raw files to: {blob_prefix}/{key_prefix}")
     
-    dbutils.fs.mkdirs(f"{blob_prefix.replace('/dbfs','')}/{key_prefix}")
+    get_dbutils().fs.mkdirs(f"{blob_prefix.replace('/dbfs','')}/{key_prefix}")
     
     for file in list(filter(lambda x: x.startswith(f"{key_prefix}"), s3_files)):
         

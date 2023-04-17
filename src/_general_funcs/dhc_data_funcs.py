@@ -1,7 +1,5 @@
 from pyspark.sql import SparkSession
 
-spark = SparkSession.builder.getOrCreate()
-
 def get_primary_affiliation(addtl_cols=[]):
     """
     Function get_primary_affiliation to return a spark df with one rec per NPI with primary affiliation
@@ -13,6 +11,8 @@ def get_primary_affiliation(addtl_cols=[]):
         spark df as described above
     
     """
+
+    spark = SparkSession.getActiveSession()
     
     cols_stmt = ''
     if addtl_cols:

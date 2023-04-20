@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 def frequency(df, cols, drop_null=False):
     """

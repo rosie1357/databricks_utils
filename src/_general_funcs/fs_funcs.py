@@ -5,8 +5,6 @@ from time import sleep
 
 from _general_funcs.utils import get_dbutils
 
-spark = SparkSession.getActiveSession()
-
 def hive_to_df(tbl, cols=['*'], df_type='spark', rec_limit=None, new_cols={}, subset=''):
     """
     Function hive_to_pandas to read from hive database table and return pandas df

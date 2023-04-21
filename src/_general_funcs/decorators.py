@@ -1,3 +1,4 @@
+import time
 from functools import wraps
 
 def timeit(**dec_kwargs):

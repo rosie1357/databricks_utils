@@ -1,9 +1,4 @@
-# Databricks notebook source
-# MAGIC %md
-# MAGIC 
-# MAGIC **dhc_data_funcs.py: This notebook contains any functions to pull DHC data**
-
-# COMMAND ----------
+from pyspark.sql import SparkSession
 
 def get_primary_affiliation(addtl_cols=[]):
     """
@@ -16,6 +11,8 @@ def get_primary_affiliation(addtl_cols=[]):
         spark df as described above
     
     """
+
+    spark = SparkSession.getActiveSession()
     
     cols_stmt = ''
     if addtl_cols:
@@ -66,8 +63,6 @@ def get_primary_affiliation(addtl_cols=[]):
            
    """)
 
-# COMMAND ----------
-
 def create_ind(col, ind, codes, CodeType=None, string_values=True, getmax=False):
     """
     Function create_ind to return statement to create indicator based on code sets
@@ -100,8 +95,6 @@ def create_ind(col, ind, codes, CodeType=None, string_values=True, getmax=False)
         stmt = f"max({stmt})"
     
     return f"{stmt} as {ind}_code"
-
-# COMMAND ----------
 
 def pull_ndc_lists(name, compound_list):
     """

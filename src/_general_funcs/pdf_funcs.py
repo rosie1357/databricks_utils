@@ -1,13 +1,5 @@
-# Databricks notebook source
-# MAGIC %md
-# MAGIC 
-# MAGIC **pdf_funcs.py: This notebook contains short functions that act on pandas dataframes**
-
-# COMMAND ----------
-
 import math
-
-# COMMAND ----------
+import numpy as np
 
 def frequency(df, cols, drop_null=False):
     """
@@ -24,8 +16,6 @@ def frequency(df, cols, drop_null=False):
     
     return df.groupby(cols, dropna=drop_null, as_index=False).size().rename(columns={'size': 'total_count'})
 
-# COMMAND ----------
-
 def split_dataframe(df, n_per_split):
     """
     Function split_dataframe to split into df into equal sized chunks and return list of split dfs
@@ -40,8 +30,6 @@ def split_dataframe(df, n_per_split):
     """
         
     return [df[i: i+n_per_split] for i in range(0, df.shape[0], n_per_split)]
-
-# COMMAND ----------
 
 def concatenate_cols(df, cols, sep=' '):
     """
@@ -59,8 +47,6 @@ def concatenate_cols(df, cols, sep=' '):
     """
     
     return pd.Series(df[cols].fillna('').values.tolist()).map(lambda c: sep.join(c))
-
-# COMMAND ----------
 
 def create_ptiles(df, col, ptiles, fillna=True, suffix='ptile', return_zero_null=True, **kwargs):
     """

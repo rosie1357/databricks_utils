@@ -1,16 +1,9 @@
-# Databricks notebook source
-# MAGIC %md
-# MAGIC 
-# MAGIC **file_transfer_funcs.py: This notebook contains any functions related to transferring files to/from databricks**
-
-# COMMAND ----------
-
 from shutil import copyfile
 from datetime import date
 
-TODAY = date.today().strftime("%Y%m%d")
+from _general_funcs.utils import get_dbutils
 
-# COMMAND ----------
+TODAY = date.today().strftime("%Y%m%d")
 
 def to_csv(sdf, outname, outdir="/tmp", array_cols=[]):
     """
@@ -35,8 +28,8 @@ def to_csv(sdf, outname, outdir="/tmp", array_cols=[]):
         
     # must delete if exists
     try:
-        dbutils.fs.ls(outpath)
-        dbutils.fs.rm(outpath, True)
+        get_dbutils().fs.ls(outpath)
+        get_dbutils().fs.rm(outpath, True)
     except:
         pass
     
@@ -45,8 +38,6 @@ def to_csv(sdf, outname, outdir="/tmp", array_cols=[]):
     print(f"File saved to {outpath}")
     
     return outpath
-
-# COMMAND ----------
 
 def save_download(filename, outdir, currentdir='/tmp', host_auth='https://adb-41629281235515.15.azuredatabricks.net', add_date=True, date=TODAY):
     """

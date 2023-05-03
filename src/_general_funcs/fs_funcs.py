@@ -1,17 +1,9 @@
-# Databricks notebook source
-# MAGIC %md
-# MAGIC 
-# MAGIC **fs_funcs.py: This notebook contains short functions that interact with the databricks file system (reading from, writing to, creating dfs, etc)**
-
-# COMMAND ----------
-
 import pyspark
+from pyspark.sql import SparkSession
 from pyspark.sql.functions import lit
-from delta.tables import DeltaTable
-
 from time import sleep
 
-# COMMAND ----------
+from _general_funcs.utils import get_dbutils
 
 def hive_to_df(tbl, cols=['*'], df_type='spark', rec_limit=None, new_cols={}, subset=''):
     """
@@ -29,6 +21,8 @@ def hive_to_df(tbl, cols=['*'], df_type='spark', rec_limit=None, new_cols={}, su
         pandas df
   
     """
+
+    spark = SparkSession.getActiveSession()
     
     assert df_type in ['pandas','spark'], f"df_type must = pandas or spark, passed value = {df_type} - FIX!"
     
@@ -53,8 +47,6 @@ def hive_to_df(tbl, cols=['*'], df_type='spark', rec_limit=None, new_cols={}, su
             
         return query
 
-# COMMAND ----------
-
 def pyspark_to_hive(df_ps, out_tbl, out_format='delta', out_mode='overwrite', overwrite_schema='false'):
     """
     Function pyspark_to_hive to save pyspark df to hive and file explorer
@@ -73,26 +65,6 @@ def pyspark_to_hive(df_ps, out_tbl, out_format='delta', out_mode='overwrite', ov
     
     df_ps.write.format(out_format).mode(out_mode).option("overwriteSchema", overwrite_schema).saveAsTable(out_tbl)
 
-# COMMAND ----------
-
-def copy_hive_table(tbl_orig, tbl_copy, shallow=False, can_replace=False):
-    """
-    Function to copy hive table to new location
-    params:
-        tbl_orig str: name of original table to copy
-        tbl_copy str: name of destination location to copy to
-        shallow bool: optional boolean to specify shallow copy, default = False (creates independent full copy)
-        can_replace bool: optional boolean to specify whether should allow replacement, or error if already exists, default = False (error if exists)
-        
-        
-    returns:
-        none
-    
-    """
-
-    DeltaTable.forName(spark, tbl_orig).clone(tbl_copy, isShallow=shallow, replace=can_replace)
-
-# COMMAND ----------
 
 def drop_hive_table(tbl_list, must_exist=True):
     """
@@ -105,13 +77,14 @@ def drop_hive_table(tbl_list, must_exist=True):
         none
     
     """
+
+    spark = SparkSession.getActiveSession()
     
     exist_logic = '' if must_exist else 'if exists'
     
     for tbl in tbl_list:
         spark.sql(f"drop table {exist_logic} {tbl}")
 
-# COMMAND ----------
 
 def list_db_tables(db, name_like='*'):
     """
@@ -124,13 +97,14 @@ def list_db_tables(db, name_like='*'):
         list
     
     """
+
+    spark = SparkSession.getActiveSession()
     
     return list(spark.sql(f"""
                           show tables in {db} like '{name_like}'
                           """) \
                .toPandas()['tableName'])
 
-# COMMAND ----------
 
 def hive_tbl_cols(tbl, as_list=False):
     """
@@ -143,14 +117,15 @@ def hive_tbl_cols(tbl, as_list=False):
         comma-separated list of col names or regular list
     
     """
-    
+
+    spark = SparkSession.getActiveSession()
+
     cols = spark.table(tbl).limit(0).columns
     if as_list==False:
         cols = ", ".join(cols)
     
     return cols
 
-# COMMAND ----------
 
 def hive_tbl_count(tbl, condition=''):
     """
@@ -163,10 +138,11 @@ def hive_tbl_count(tbl, condition=''):
         int value of row count
     
     """
+
+    spark = SparkSession.getActiveSession()
     
     return spark.sql(f"select count(1) as count from {tbl} {condition}").collect()[0]['count']
 
-# COMMAND ----------
 
 def hive_tbl_count_distinct(tbl, col):
     """
@@ -179,10 +155,11 @@ def hive_tbl_count_distinct(tbl, col):
         int value of distinct value counts
     
     """
+
+    spark = SparkSession.getActiveSession()
     
     return spark.sql(f"select count(distinct {col}) as count from {tbl}").collect()[0]['count']
 
-# COMMAND ----------
 
 def hive_frequency(tbl, cols, maxobs=50):
     """
@@ -196,6 +173,8 @@ def hive_frequency(tbl, cols, maxobs=50):
         none, prints frequency
     
     """
+
+    spark = SparkSession.getActiveSession()
     
     cols_query = ', '.join(cols)
     
@@ -217,8 +196,6 @@ def hive_frequency(tbl, cols, maxobs=50):
     
     """).show(maxobs, truncate=False)
 
-# COMMAND ----------
-
 def hive_sample(tbl, maxobs=50):
     """
     Function hive_sample to print sample of records from hive table
@@ -228,10 +205,10 @@ def hive_sample(tbl, maxobs=50):
         
     returns: none (prints records)
     """
+
+    spark = SparkSession.getActiveSession()
     
     spark.sql(f"select * from {tbl} limit {maxobs}").display()
-
-# COMMAND ----------
 
 def list_lookup(intable, col, subset_col, subset_value, string=True):
     """
@@ -246,6 +223,8 @@ def list_lookup(intable, col, subset_col, subset_value, string=True):
         string bool: optional param to specify lookup values are string and should be separated by comma with added quotes, otherwise false is comma-only (assumes numeric)
     """
 
+    spark = SparkSession.getActiveSession()
+
     values = spark.sql(f"""select {col}
                            from {intable}
                            where {subset_col} = {subset_value}
@@ -259,8 +238,6 @@ def list_lookup(intable, col, subset_col, subset_value, string=True):
         return "'" + joined + "'"
     
     return joined
-
-# COMMAND ----------
 
 def rm_checkpoints(checkdir):
     """
@@ -283,12 +260,10 @@ def rm_checkpoints(checkdir):
     print(f"User note! ALL files within {checkdir} will be removed - cancel within {x} seconds if unintended!" + '\n')
     sleep(x)
     
-    dbutils.fs.rm(checkdir, True)
-    dbutils.fs.mkdirs(checkdir)
+    get_dbutils().fs.rm(checkdir, True)
+    get_dbutils().fs.mkdirs(checkdir)
 
     print(f"All files removed from checkpoint directory = {checkdir}!")
-
-# COMMAND ----------
 
 def clear_database(database, sleep_time=10):
     """
@@ -307,6 +282,7 @@ def clear_database(database, sleep_time=10):
     
     """
     
+    spark = SparkSession.getActiveSession()
     
     print(f"User note! ALL tables within {database} will be removed - cancel within {sleep_time} seconds if unintended!" + '\n')
     sleep(sleep_time)

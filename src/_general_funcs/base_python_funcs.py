@@ -1,13 +1,4 @@
-# Databricks notebook source
-# MAGIC %md
-# MAGIC 
-# MAGIC **base_python_funcs.py: This notebook contains any functions related to base python (eg dealing with lists, stringsm date)**
-
-# COMMAND ----------
-
 from datetime import datetime, timedelta
-
-# COMMAND ----------
 
 def unique_list_elements(list1, list2):
     """
@@ -22,8 +13,6 @@ def unique_list_elements(list1, list2):
     
     return list(set(list2).difference(list1))
 
-# COMMAND ----------
-
 def list_intersection(list1, list2):
     """
     Function list_intersection to identify elements in both lists
@@ -36,7 +25,6 @@ def list_intersection(list1, list2):
     """
     return list(set(list1) & set(list2))
 
-# COMMAND ----------
 
 def unique_items_part(items, num, sep='/'):
     """
@@ -54,7 +42,6 @@ def unique_items_part(items, num, sep='/'):
     """
     return sorted(set(map(lambda x: x.split(sep)[num], items)))
 
-# COMMAND ----------
 
 def add_time(start_date, string_format="%Y-%m-%d", add_days=0, add_weeks=0):
     """
@@ -75,8 +62,6 @@ def add_time(start_date, string_format="%Y-%m-%d", add_days=0, add_weeks=0):
     
     new_date = datetime.strptime(start_date, string_format) + timedelta(days=add_days, weeks=add_weeks)
     return new_date.strftime(string_format)
-
-# COMMAND ----------
 
 def collapse_multi_index(df, SEP='_'):
     """

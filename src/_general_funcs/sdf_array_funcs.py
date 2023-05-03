@@ -1,13 +1,4 @@
-# Databricks notebook source
-# MAGIC %md
-# MAGIC 
-# MAGIC **sdf_array_funcs.py: This notebook contains functions that work on sdf arrays**
-
-# COMMAND ----------
-
 from pyspark.sql import functions as F
-
-# COMMAND ----------
 
 def sdf_list_in_array(sdf, array_col, match_list, match_ind='any_match', **kwargs):
     
@@ -41,8 +32,6 @@ def sdf_list_in_array(sdf, array_col, match_list, match_ind='any_match', **kwarg
         
     return sdf
 
-# COMMAND ----------
-
 def sdf_array_overlap_rm(sdf, base_col, comp_cols):
     """
     Function sdf_array_overlap_rm to remove any overlap from comp_cols that exists between base_col and each comp_col
@@ -64,8 +53,6 @@ def sdf_array_overlap_rm(sdf, base_col, comp_cols):
     
     return sdf
 
-# COMMAND ----------
-
 def sdf_extract_struct(sdf, struct_col, struct_field, new_col):
     """
     Function sdf_extract_struct() to extract a specific field from structured array, return an array with those fields extracted, with nulls removed
@@ -81,8 +68,6 @@ def sdf_extract_struct(sdf, struct_col, struct_field, new_col):
     """
     
     return sdf.withColumn(new_col, F.array_except(F.col(struct_col).getField(struct_field), F.array(F.lit(None))))
-
-# COMMAND ----------
 
 def sdf_concat_arrays_unq(sdf, cols, new_col, as_size=False):
     """

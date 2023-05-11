@@ -32,6 +32,37 @@ def sdf_list_in_array(sdf, array_col, match_list, match_ind='any_match', **kwarg
         
     return sdf
 
+def sdf_array_contains(sdf, array_col, match_values, match_ind='any_match'):
+    
+    """
+    Function sdf_array_contains() to identify whether ANY element of an array column contains (starts/contains/ends with) given string
+    params:
+        sdf: spark df
+        array_col str: name of array column
+        match_values str/list: string or list of strings to match
+        match_ind str: optional param with name of match indicator, default = 'any_match'
+            
+    returns:
+        sdf with column 'any_match', which = 1 if any match found, 0 otherwise
+    
+    """
+    # if match values is passed as string, put into list to loop over like with input lists
+
+    if type(match_values) == str:
+        match_values = [match_values]
+    
+    # create array col of 'matched_values', which is ALL values from input array with match (originally set to None if value not in list, but then Nones are removed with F.array_except)
+    # create indicator match_ind, with = 1 if 'matched_values' has size >0, otherwise = 0
+
+    sdf = sdf.withColumn(match_ind, F.lit(0))
+
+    for match_string in match_values:
+    
+        sdf = sdf.withColumn('matched_values', F.array_except(F.transform(array_col, lambda x: F.when(x.startswith(match_string), x).otherwise(None)), F.array(F.lit(None)))) \
+                .withColumn(match_ind, F.when(F.size(F.col('matched_values'))>0, 1).otherwise(F.col(match_ind)))
+
+    return sdf
+
 def sdf_array_overlap_rm(sdf, base_col, comp_cols):
     """
     Function sdf_array_overlap_rm to remove any overlap from comp_cols that exists between base_col and each comp_col

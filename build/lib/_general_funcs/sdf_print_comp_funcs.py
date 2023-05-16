@@ -1,4 +1,3 @@
-import datacompy
 from pyspark.sql import functions as F
 from pyspark.sql import SparkSession
 
@@ -95,6 +94,10 @@ def sdfs_compare(base_sdf, comp_sdf, table_name, join_cols, **kwargs):
     prints out human-readable comparison report with summary stats
     
     """
+
+    import datacompy
+
+    spark = SparkSession.getActiveSession()
     
     # extract kwargs if given 
     

@@ -7,5 +7,5 @@ setup(
     setup_requires=["wheel"],
     description="",
     author="",
-    version="0.1.9"
+    version="0.1.10"
 )

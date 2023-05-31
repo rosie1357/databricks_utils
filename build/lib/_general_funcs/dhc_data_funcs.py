@@ -94,7 +94,7 @@ def create_ind(col, ind, codes, CodeType=None, string_values=True, getmax=False)
     if getmax:
         stmt = f"max({stmt})"
     
-    return f"{stmt} as {ind}_code"
+    return f"{stmt} as {ind}"
 
 def pull_ndc_lists(name, compound_list):
     """

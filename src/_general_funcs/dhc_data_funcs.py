@@ -24,6 +24,7 @@ def get_primary_affiliation(addtl_cols=[]):
         select c.*
                ,d.hq_city as defhc_city
                ,d.hq_state as defhc_state
+               ,d.hq_zip_code as defhc_zip
                ,d.firm_type as defhc_type
         
         from (

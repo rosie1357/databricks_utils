@@ -1,4 +1,5 @@
 from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
 
 def get_primary_affiliation(addtl_cols=[]):
     """
@@ -19,7 +20,7 @@ def get_primary_affiliation(addtl_cols=[]):
         cols_stmt = ', ' + ', '.join(addtl_cols)
     
     
-    return spark.sql(f"""
+    aff_sdf = spark.sql(f"""
     
         select c.*
                ,d.hq_city as defhc_city
@@ -63,6 +64,19 @@ def get_primary_affiliation(addtl_cols=[]):
        on c.defhc_id = d.hospital_id
            
    """)
+    
+   # read in certications, aggregate to NPI-level to get array of unique values
+
+    certs_sdf = spark.sql("""
+                            select npi as physician_npi
+                                  ,CERTIFICATE_NAME 
+                                  
+                            from hcp_specialties.hcp_certifications
+
+                         """).groupby('physician_npi') \
+                             .agg(F.array_sort(F.collect_set(F.col('CERTIFICATE_NAME'))).alias('certificates'))
+
+    return aff_sdf.join(certs_sdf, ['physician_npi'], 'left')
 
 def create_ind(col, ind, codes, CodeType=None, string_values=True, getmax=False):
     """

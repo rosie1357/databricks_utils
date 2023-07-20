@@ -10,7 +10,7 @@ setup(
     packages=find_packages("src"), 
     package_dir={"": "src"},
     setup_requires=["wheel"],
-    version= "0.1.9",
+    version= "0.3.0",
     description="",
     author="",
 )

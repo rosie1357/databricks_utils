@@ -73,6 +73,28 @@ def sdf_frequency(sdf, cols, order='count', maxobs=25, with_pct=False, weight=No
     
     if return_df:
         return freq
+    
+def sdf_summary_stats(sdf, cols, stratcols=[], stats=[F.min, F.max, F.sum]):
+    """
+    function sdf_summary_stats to get summary stats (min, max, sum default) of continuous vars,
+        (generally used for QC of new cols)
+        with optional stratification cols
+
+    params:
+        sdf: spark df
+        cols list: list of continuous cols to get summary stats for
+        startcol list: optional param to specify categorical cols to use as stratification, default = None
+        stats list: list of stats to run, default are min, max, sum - must pass actual function, eg F.min..
+
+    returns:
+        none, prints stats
+
+    """
+    for col in cols:
+        strat = sdf.groupby(*stratcols).agg(*[F.format_number(stat(F.col(col)),1).alias(stat.__name__) for stat in stats]) 
+
+        print(f"Summary stats for {col}:")
+        strat.display()
 
 def sdfs_compare(base_sdf, comp_sdf, table_name, join_cols, **kwargs):
     """

@@ -91,7 +91,7 @@ def sdf_summary_stats(sdf, cols, stratcols=[], stats=[F.min, F.max, F.sum]):
 
     """
     for col in cols:
-        strat = sdf.groupby(*stratcols).agg(*[F.format_number(stat(F.col(col)),1).alias(stat.__name__) for stat in stats]) 
+        strat = sdf.groupby(*stratcols).agg(*[F.format_number(F.count(F.lit(1)), 0).alias('count_recs')]+[F.format_number(stat(F.col(col)),1).alias(stat.__name__) for stat in stats]) 
 
         print(f"Summary stats for {col}:")
         strat.display()
